@@ -30,11 +30,15 @@ fs.createReadStream(inputFilePath)
             { id: 'projektnummer', title: 'Projektnummer' },
             { id: 'projektstandort', title: 'Projektstandort' },
           ];
-        } else {
+        } else if (header === 'Ort' || header === 'Projektleiter') {
           return { id: header, title: header };
         }
       })
+      .filter((header) => header !== undefined)
       .flat();
+
+    // Fügen Sie die Beschreibung am Ende der Header hinzu
+    newHeaders.push({ id: 'Beschreibung', title: 'Beschreibung' });
 
     csvWriter = createObjectCsvWriter({
       path: outputFilePath,
@@ -55,6 +59,15 @@ fs.createReadStream(inputFilePath)
       row.projektnummer = 'N/A';
       row.projektstandort = 'N/A';
     }
+
+    // Behalten Sie nur die gewünschten Spalten
+    row = {
+      projektnummer: row.projektnummer,
+      projektstandort: row.projektstandort,
+      Ort: row.Ort,
+      Projektleiter: row.Projektleiter,
+      Beschreibung: row.Beschreibung,
+    };
 
     dataRows.push(row);
   })
